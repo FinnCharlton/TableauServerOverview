@@ -17,6 +17,7 @@ site = 'til2'
 
 loginInstance = tableauServer(url,site,pat,patSecret)
 
-wbs, pag = loginInstance.get_workbooks()
-print([workbook.name for workbook in wbs])
-
+wbs = loginInstance.get_workbooks()
+ls = [{"name":wb.name,"id":wb.id} for wb in wbs]
+df = pd.DataFrame(ls)
+print(df)

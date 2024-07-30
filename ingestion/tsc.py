@@ -22,5 +22,8 @@ class tableauServer:
 
     def get_workbooks(self):
         with self.server.auth.sign_in(self.tokenAuth):
-            workbooks, pag = self.server.workbooks.get()
-        return workbooks, pag
+            return [wb for wb in TSC.Pager(self.server.workbooks)]
+        
+    def get_datasources(self):
+        with self.server.auth.sign_in(self.tokenAuth):
+            return [wb for wb in TSC.Pager(self.server.datasources)]
