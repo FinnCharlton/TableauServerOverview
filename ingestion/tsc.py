@@ -27,3 +27,7 @@ class tableauServer:
     def get_datasources(self):
         with self.server.auth.sign_in(self.tokenAuth):
             return [wb for wb in TSC.Pager(self.server.datasources)]
+        
+    def get_users(self):
+        with self.server.auth.sign_in(self.tokenAuth):
+            return [wb for wb in TSC.Pager(self.server.users)]
