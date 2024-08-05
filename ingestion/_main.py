@@ -20,28 +20,28 @@ from snowflake_connector import SnowflakeConnector
 #Import tableau server credentials
 with open(r"C:\Users\FinnCharlton\credentials.csv") as creds:
     file = csv.reader(creds)
-    dicTS = {}
+    ts_dict = {}
     for line in file:
-        dicTS = dicTS|({line[0]:line[1]})
+        ts_dict = ts_dict|({line[0]:line[1]})
 
-TSurl = dicTS['ï»¿url']
-TSpat = dicTS['pat']
-TSpatSecret = dicTS['patSecret']
-TSsite = dicTS['site']
+ts_url = ts_dict['ï»¿url']
+ts_pat = ts_dict['pat']
+ts_pat_secret = ts_dict['patSecret']
+ts_site = ts_dict['site']
 
 #Import snowflake credentials
 with open(r"C:\Users\FinnCharlton\snowflake_credentials.csv") as creds:
     file = csv.reader(creds)
-    dicSnow = {}
+    snow_dict = {}
     for line in file:
-        dicSnow = dicSnow|({line[0]:line[1]})
+        snow_dict = snow_dict|({line[0]:line[1]})
 
-snowUsername = dicSnow["username"]
-snowPassword = dicSnow["password"]
-snowAccount = dicSnow["account"]
-snowWarehouse = dicSnow["warehouse"]
-snowDatabase = dicSnow["database"]
-snowSchema = dicSnow["schema"]
+snow_username = snow_dict["username"]
+snow_password = snow_dict["password"]
+snow_account = snow_dict["account"]
+snow_warehouse = snow_dict["warehouse"]
+snow_database = snow_dict["database"]
+snow_schema = snow_dict["schema"]
 
 
 
@@ -54,17 +54,17 @@ def fetch(instance,method):
 
 
 #Tableau Server Client Login
-loginInstance = tableauServer(TSurl,TSsite,TSpat,TSpatSecret)
+ts_login_instance = tableauServer(ts_url,ts_site,ts_pat,ts_pat_secret)
 
 #Get fact tables
 try:
-    df_workbooks = fetch(loginInstance,loginInstance.get_workbooks())
+    df_workbooks = fetch(ts_login_instance,ts_login_instance.get_workbooks())
     print("Workbook information retrieved")
-    df_datasources = fetch(loginInstance,loginInstance.get_datasources())
+    df_datasources = fetch(ts_login_instance,ts_login_instance.get_datasources())
     print("Datasource information retrieved")
-    df_users = fetch(loginInstance,loginInstance.get_users())
+    df_users = fetch(ts_login_instance,ts_login_instance.get_users())
     print("User information retrieved")
-    df_views = fetch(loginInstance,loginInstance.get_views())
+    df_views = fetch(ts_login_instance,ts_login_instance.get_views())
     print("View information retrieved")
 
 except Exception as e:
@@ -72,9 +72,9 @@ except Exception as e:
 
 #Get mapping tables
 try:
-    df_datasource_mappings = pd.DataFrame(loginInstance.get_datasource_mappings()).explode(["datasource_ids"])
+    df_datasource_mappings = pd.DataFrame(ts_login_instance.get_datasource_mappings()).explode(["datasource_ids"])
     print("Datasource mappings retrieved")
-    df_view_mappings = pd.DataFrame(loginInstance.get_view_mappings()).explode(["view_ids"])
+    df_view_mappings = pd.DataFrame(ts_login_instance.get_view_mappings()).explode(["view_ids"])
     print("View mappings retrieved")
 
 except Exception as e:
@@ -93,14 +93,14 @@ upload_info = [
 
 
 #Snowflake Login
-snowConnection = SnowflakeConnector(
-    username=snowUsername,
-    password=snowPassword,
-    account=snowAccount,
-    warehouse=snowWarehouse,
-    database=snowDatabase,
-    schema=snowSchema
+snow_connection = SnowflakeConnector(
+    username=snow_username,
+    password=snow_password,
+    account=snow_account,
+    warehouse=snow_warehouse,
+    database=snow_database,
+    schema=snow_schema
     )
 
 #Snowflake upload
-snowConnection.ingest(upload_info)
+snow_connection.ingest(upload_info)
