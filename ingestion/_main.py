@@ -15,6 +15,8 @@ import snowflake as snow
 from snowflake.connector.pandas_tools import write_pandas
 from snowflake_connector import SnowflakeConnector
 
+
+
 #Import tableau server credentials
 with open(r"C:\Users\FinnCharlton\credentials.csv") as creds:
     file = csv.reader(creds)
@@ -26,12 +28,6 @@ TSurl = dicTS['ï»¿url']
 TSpat = dicTS['pat']
 TSpatSecret = dicTS['patSecret']
 TSsite = dicTS['site']
-
-
-def fetch(instance,method):
-    objects = objectList(method)
-    df = objects.dfParse()
-    return df
 
 #Import snowflake credentials
 with open(r"C:\Users\FinnCharlton\snowflake_credentials.csv") as creds:
@@ -47,31 +43,64 @@ snowWarehouse = dicSnow["warehouse"]
 snowDatabase = dicSnow["database"]
 snowSchema = dicSnow["schema"]
 
+
+
+#Define function for pulling fact tables
+def fetch(instance,method):
+    objects = objectList(method)
+    df = objects.dfParse()
+    return df
+
+
+
+#Tableau Server Client Login
 loginInstance = tableauServer(TSurl,TSsite,TSpat,TSpatSecret)
 
-dfWorkbooks = fetch(loginInstance,loginInstance.get_workbooks())
-# dfDatasources = fetch(loginInstance,loginInstance.get_datasources())
-# dfUsers = fetch(loginInstance,loginInstance.get_users())
+#Get fact tables
+try:
+    df_workbooks = fetch(loginInstance,loginInstance.get_workbooks())
+    print("Workbook information retrieved")
+    df_datasources = fetch(loginInstance,loginInstance.get_datasources())
+    print("Datasource information retrieved")
+    df_users = fetch(loginInstance,loginInstance.get_users())
+    print("User information retrieved")
+    df_views = fetch(loginInstance,loginInstance.get_views())
+    print("View information retrieved")
 
-wb123 = loginInstance.get_workbooks(id="225a1ef0-fad5-11e3-b0c5-e301bf272de7")
-print(wb123)
+except Exception as e:
+    print(f"Error getting fact tables : {e}")
 
-# ids = ["225a1ef0-fad5-11e3-b0c5-e301bf272de7","225822c6-fad5-11e3-9c99-db91d1beabdd"]
+#Get mapping tables
+try:
+    df_datasource_mappings = pd.DataFrame(loginInstance.get_datasource_mappings()).explode(["datasource_ids"])
+    print("Datasource mappings retrieved")
+    df_view_mappings = pd.DataFrame(loginInstance.get_view_mappings()).explode(["view_ids"])
+    print("View mappings retrieved")
+
+except Exception as e:
+    print(f"Error getting mapping tables : {e}")
+
+#Set upload information
+upload_info = [
+    { "name":"src_workbooks", "content":df_workbooks },
+    { "name":"src_datasources", "content":df_datasources },
+    { "name":"src_users", "content":df_users },
+    { "name":"src_views", "content":df_views },
+    { "name":"src_datasource_mappings", "content":df_datasource_mappings },
+    { "name":"src_view_mappings", "content":df_view_mappings },
+]
 
 
 
-# snowConnection = SnowflakeConnector(
-#     username=snowUsername,
-#     password=snowPassword,
-#     account=snowAccount,
-#     warehouse=snowWarehouse,
-#     database=snowDatabase,
-#     schema=snowSchema
-#     )
+#Snowflake Login
+snowConnection = SnowflakeConnector(
+    username=snowUsername,
+    password=snowPassword,
+    account=snowAccount,
+    warehouse=snowWarehouse,
+    database=snowDatabase,
+    schema=snowSchema
+    )
 
-# snowConnection.ingest(
-#     dfWorkbooks,
-#     "src_workbooks"
-# )
-
-
+#Snowflake upload
+snowConnection.ingest(upload_info)

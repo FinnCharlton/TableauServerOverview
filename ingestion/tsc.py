@@ -20,13 +20,26 @@ class tableauServer:
         except Exception as e:
             print(e)
 
-    def get_workbooks(self,id):
+    def get_datasource_mappings(self):
+        all_connections = []
         with self.server.auth.sign_in(self.tokenAuth):
-            wbList = self.server.workbooks.get_by_id(id)
-            return
-        
+            for wb in TSC.Pager(self.server.workbooks):
+                self.server.workbooks.populate_connections(wb)
+                all_connections.append({"workbook_id":wb.id,"datasource_ids":[conn.datasource_id for conn in wb.connections]})
+        return all_connections
+    
+    def get_view_mappings(self):
+        all_views = []
+        with self.server.auth.sign_in(self.tokenAuth):
+            for wb in TSC.Pager(self.server.workbooks):
+                self.server.workbooks.populate_views(wb)
+                all_views.append({"workbook_id":wb.id,"view_ids":[view.id for view in wb.views]})
+        return all_views
+    
+    def get_workbooks(self):
+        with self.server.auth.sign_in(self.tokenAuth):
+            return [wb for wb in TSC.Pager(self.server.workbooks)]
           
-        
     def get_datasources(self):
         with self.server.auth.sign_in(self.tokenAuth):
             return [wb for wb in TSC.Pager(self.server.datasources)]
@@ -34,3 +47,7 @@ class tableauServer:
     def get_users(self):
         with self.server.auth.sign_in(self.tokenAuth):
             return [wb for wb in TSC.Pager(self.server.users)]
+        
+    def get_views(self):
+        with self.server.auth.sign_in(self.tokenAuth):
+            return [wb for wb in TSC.Pager(self.server.views)]

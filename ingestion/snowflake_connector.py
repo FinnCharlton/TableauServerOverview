@@ -34,9 +34,16 @@ class SnowflakeConnector:
         except Exception as e:
             print(f"Error: {e}")
 
-    def ingest(self,df,dfName):
+    def ingest(self,upload_info):
         self.auth()
-        self.write(df,dfName)
+        for element in upload_info:
+            name = element["name"]
+            content = element["content"]
+            try:
+                self.write(content,name)
+                print(f"Uploaded {name}")
+            except Exception as e:
+                print(f"Error uploading {name} : {e}")
         try:
             self.conn.close()
             print("Connection Closed")
