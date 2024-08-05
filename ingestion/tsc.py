@@ -1,5 +1,5 @@
 """
-This script definies classes to authorise and call
+This script defines classes to authorise and call
 the Tableau REST API 
 """
 import tableauserverclient as TSC

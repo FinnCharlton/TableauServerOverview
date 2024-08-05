@@ -11,18 +11,21 @@ from parser import objectList
 import pandas as pd
 import numpy as np
 import csv as csv
+import snowflake as snow 
+from snowflake.connector.pandas_tools import write_pandas
+from snowflake_connector import SnowflakeConnector
 
-#Import credentials
+#Import tableau server credentials
 with open(r"C:\Users\FinnCharlton\credentials.csv") as creds:
     file = csv.reader(creds)
-    dic = {}
+    dicTS = {}
     for line in file:
-        dic = dic|({line[0]:line[1]})
+        dicTS = dicTS|({line[0]:line[1]})
 
-url = dic['ï»¿url']
-pat = dic['pat']
-patSecret = dic['patSecret']
-site = dic['site']
+TSurl = dicTS['ï»¿url']
+TSpat = dicTS['pat']
+TSpatSecret = dicTS['patSecret']
+TSsite = dicTS['site']
 
 
 def fetch(instance,method):
@@ -30,10 +33,40 @@ def fetch(instance,method):
     df = objects.dfParse()
     return df
 
-loginInstance = tableauServer(url,site,pat,patSecret)
+#Import snowflake credentials
+with open(r"C:\Users\FinnCharlton\snowflake_credentials.csv") as creds:
+    file = csv.reader(creds)
+    dicSnow = {}
+    for line in file:
+        dicSnow = dicSnow|({line[0]:line[1]})
 
-dfWorkbooks = fetch(loginInstance,loginInstance.get_workbooks())
-dfDatasources = fetch(loginInstance,loginInstance.get_datasources())
+snowUsername = dicSnow["username"]
+snowPassword = dicSnow["password"]
+snowAccount = dicSnow["account"]
+snowWarehouse = dicSnow["warehouse"]
+snowDatabase = dicSnow["database"]
+snowSchema = dicSnow["schema"]
+
+loginInstance = tableauServer(TSurl,TSsite,TSpat,TSpatSecret)
+
+# dfWorkbooks = fetch(loginInstance,loginInstance.get_workbooks())
+# dfDatasources = fetch(loginInstance,loginInstance.get_datasources())
 dfUsers = fetch(loginInstance,loginInstance.get_users())
 
-print(dfUsers)
+# print(dfUsers.head())
+
+snowConnection = SnowflakeConnector(
+    username=snowUsername,
+    password=snowPassword,
+    account=snowAccount,
+    warehouse=snowWarehouse,
+    database=snowDatabase,
+    schema=snowSchema
+    )
+
+snowConnection.ingest(
+    dfUsers,
+    "src_users"
+)
+
+
