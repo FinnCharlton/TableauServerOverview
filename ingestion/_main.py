@@ -11,9 +11,11 @@ from parser import objectList
 import pandas as pd
 import numpy as np
 import csv as csv
-import snowflake as snow 
+import snowflake as snow
+import datetime
 from snowflake.connector.pandas_tools import write_pandas
 from snowflake_connector import SnowflakeConnector
+
 
 
 
@@ -51,7 +53,9 @@ def fetch(instance,method):
     df = objects.dfParse()
     return df
 
-
+#Define function for adding time of creation
+def add_updated_time(df):
+    df["_src__updated_at"] = datetime.datetime.now()
 
 #Tableau Server Client Login
 ts_login_instance = tableauServer(ts_url,ts_site,ts_pat,ts_pat_secret)
@@ -90,7 +94,9 @@ upload_info = [
     { "name":"src_view_mappings", "content":df_view_mappings },
 ]
 
-
+#Add updated_at column
+for dict in upload_info:
+    add_updated_time(dict["content"])
 
 #Snowflake Login
 snow_connection = SnowflakeConnector(

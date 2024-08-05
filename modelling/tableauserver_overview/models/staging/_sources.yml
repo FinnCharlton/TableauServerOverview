@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: tableauserver_overview
+    database: TIL_PORTFOLIO_PROJECTS
+    schema: tableauserver_overview
+    tables:
+      - name: src_workbooks
+      - name: src_datasources
+      - name: src_users
+      - name: src_views
+      - name: src_view_mappings
+      - name: src_datasource_mappings
