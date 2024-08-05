@@ -20,9 +20,12 @@ class tableauServer:
         except Exception as e:
             print(e)
 
-    def get_workbooks(self):
+    def get_workbooks(self,id):
         with self.server.auth.sign_in(self.tokenAuth):
-            return [wb for wb in TSC.Pager(self.server.workbooks)]
+            wbList = self.server.workbooks.get_by_id(id)
+            return
+        
+          
         
     def get_datasources(self):
         with self.server.auth.sign_in(self.tokenAuth):

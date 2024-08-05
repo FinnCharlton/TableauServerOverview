@@ -49,24 +49,29 @@ snowSchema = dicSnow["schema"]
 
 loginInstance = tableauServer(TSurl,TSsite,TSpat,TSpatSecret)
 
-# dfWorkbooks = fetch(loginInstance,loginInstance.get_workbooks())
+dfWorkbooks = fetch(loginInstance,loginInstance.get_workbooks())
 # dfDatasources = fetch(loginInstance,loginInstance.get_datasources())
-dfUsers = fetch(loginInstance,loginInstance.get_users())
+# dfUsers = fetch(loginInstance,loginInstance.get_users())
 
-# print(dfUsers.head())
+wb123 = loginInstance.get_workbooks(id="225a1ef0-fad5-11e3-b0c5-e301bf272de7")
+print(wb123)
 
-snowConnection = SnowflakeConnector(
-    username=snowUsername,
-    password=snowPassword,
-    account=snowAccount,
-    warehouse=snowWarehouse,
-    database=snowDatabase,
-    schema=snowSchema
-    )
+# ids = ["225a1ef0-fad5-11e3-b0c5-e301bf272de7","225822c6-fad5-11e3-9c99-db91d1beabdd"]
 
-snowConnection.ingest(
-    dfUsers,
-    "src_users"
-)
+
+
+# snowConnection = SnowflakeConnector(
+#     username=snowUsername,
+#     password=snowPassword,
+#     account=snowAccount,
+#     warehouse=snowWarehouse,
+#     database=snowDatabase,
+#     schema=snowSchema
+#     )
+
+# snowConnection.ingest(
+#     dfWorkbooks,
+#     "src_workbooks"
+# )
 
 
