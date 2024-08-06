@@ -27,15 +27,7 @@ class tableauServer:
                 self.server.workbooks.populate_connections(wb)
                 all_connections.append({"workbook_id":wb.id,"datasource_ids":[conn.datasource_id for conn in wb.connections]})
         return all_connections
-    
-    def get_view_mappings(self):
-        all_views = []
-        with self.server.auth.sign_in(self.tokenAuth):
-            for wb in TSC.Pager(self.server.workbooks):
-                self.server.workbooks.populate_views(wb)
-                all_views.append({"workbook_id":wb.id,"view_ids":[view.id for view in wb.views]})
-        return all_views
-    
+        
     def get_workbooks(self):
         with self.server.auth.sign_in(self.tokenAuth):
             return [wb for wb in TSC.Pager(self.server.workbooks)]

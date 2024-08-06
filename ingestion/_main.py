@@ -78,8 +78,6 @@ except Exception as e:
 try:
     df_datasource_mappings = pd.DataFrame(ts_login_instance.get_datasource_mappings()).explode(["datasource_ids"])
     print("Datasource mappings retrieved")
-    df_view_mappings = pd.DataFrame(ts_login_instance.get_view_mappings()).explode(["view_ids"])
-    print("View mappings retrieved")
 
 except Exception as e:
     print(f"Error getting mapping tables : {e}")
@@ -90,8 +88,7 @@ upload_info = [
     { "name":"src_datasources", "content":df_datasources },
     { "name":"src_users", "content":df_users },
     { "name":"src_views", "content":df_views },
-    { "name":"src_datasource_mappings", "content":df_datasource_mappings },
-    { "name":"src_view_mappings", "content":df_view_mappings },
+    { "name":"src_datasource_mappings", "content":df_datasource_mappings }
 ]
 
 #Add updated_at column

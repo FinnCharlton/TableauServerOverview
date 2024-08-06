@@ -1,4 +1,5 @@
 
+
 select 
     "_id" as id,
     "name" as name,
@@ -8,7 +9,6 @@ select
     "_created_at" as created_at,
     "_updated_at" as last_updated,
     "_description" as description,
-    "_webpage_url" as url
-from 
-    {{source('tableauserver_overview','src_workbooks')}}
-    
+    "_has_extracts" as has_extracts
+from
+    {{source('tableauserver_overview','src_datasources')}}
