@@ -29,7 +29,7 @@ class SnowflakeConnector:
 
     def write(self,df,dfName):
         try:
-            write_pandas(self.conn,df,dfName,auto_create_table=True,use_logical_type=True)
+            write_pandas(self.conn,df,dfName,auto_create_table=True,use_logical_type=True,overwrite=True)
             print("Table written successfully")
         except Exception as e:
             print(f"Error: {e}")

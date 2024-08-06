@@ -3,6 +3,7 @@ This script defines classes to authorise and call
 the Tableau REST API 
 """
 import tableauserverclient as TSC
+from functools import partial
 
 class tableauServer:
     def __init__(self,url,site,pat,patSecret):
@@ -42,4 +43,5 @@ class tableauServer:
         
     def get_views(self):
         with self.server.auth.sign_in(self.tokenAuth):
-            return [wb for wb in TSC.Pager(self.server.views)]
+            view_pager = partial(self.server.views.get,usage=True)
+            return [wb for wb in TSC.Pager(view_pager)]

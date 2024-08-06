@@ -74,6 +74,8 @@ try:
 except Exception as e:
     print(f"Error getting fact tables : {e}")
 
+print(df_views)
+
 #Get mapping tables
 try:
     df_datasource_mappings = pd.DataFrame(ts_login_instance.get_datasource_mappings()).explode(["datasource_ids"])
@@ -82,7 +84,7 @@ try:
 except Exception as e:
     print(f"Error getting mapping tables : {e}")
 
-#Set upload information
+# #Set upload information
 upload_info = [
     { "name":"src_workbooks", "content":df_workbooks },
     { "name":"src_datasources", "content":df_datasources },
@@ -91,11 +93,11 @@ upload_info = [
     { "name":"src_datasource_mappings", "content":df_datasource_mappings }
 ]
 
-#Add updated_at column
+# #Add updated_at column
 for dict in upload_info:
     add_updated_time(dict["content"])
 
-#Snowflake Login
+# #Snowflake Login
 snow_connection = SnowflakeConnector(
     username=snow_username,
     password=snow_password,
@@ -105,5 +107,5 @@ snow_connection = SnowflakeConnector(
     schema=snow_schema
     )
 
-#Snowflake upload
+# #Snowflake upload
 snow_connection.ingest(upload_info)
