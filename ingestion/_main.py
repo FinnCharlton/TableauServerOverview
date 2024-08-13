@@ -17,8 +17,6 @@ from snowflake.connector.pandas_tools import write_pandas
 from snowflake_connector import SnowflakeConnector
 
 
-
-
 #Import tableau server credentials
 with open(r"C:\Users\FinnCharlton\credentials.csv") as creds:
     file = csv.reader(creds)
@@ -74,11 +72,10 @@ try:
 except Exception as e:
     print(f"Error getting fact tables : {e}")
 
-print(df_views)
 
 #Get mapping tables
 try:
-    df_datasource_mappings = pd.DataFrame(ts_login_instance.get_datasource_mappings()).explode(["datasource_ids"])
+    df_datasource_mappings = pd.DataFrame(ts_login_instance.get_datasource_mappings()).explode(["datasource_name"])
     print("Datasource mappings retrieved")
 
 except Exception as e:
@@ -107,5 +104,5 @@ snow_connection = SnowflakeConnector(
     schema=snow_schema
     )
 
-# #Snowflake upload
+# # #Snowflake upload
 snow_connection.ingest(upload_info)
