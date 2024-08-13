@@ -8,4 +8,4 @@ from
 left join
     {{ref("int_usage_per_workbook")}} usage
 on
-    wbooks.id = usage.workbook_id
+    wbooks.id = usage.workbook_id and wbooks.site = usage.site

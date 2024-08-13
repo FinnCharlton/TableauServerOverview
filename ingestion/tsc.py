@@ -4,6 +4,7 @@ the Tableau REST API
 """
 import tableauserverclient as TSC
 from functools import partial
+import pandas as pd
 
 class tableauServer:
     def __init__(self,url,site,pat,patSecret):
@@ -21,6 +22,11 @@ class tableauServer:
         except Exception as e:
             print(e)
 
+    def dfParse(self, objList):
+        df = pd.DataFrame([vars(obj) for obj in objList])
+        df["site"] = self.site
+        return df
+
     def get_datasource_mappings(self):
         all_connections = []
         with self.server.auth.sign_in(self.tokenAuth):
@@ -31,17 +37,22 @@ class tableauServer:
         
     def get_workbooks(self):
         with self.server.auth.sign_in(self.tokenAuth):
-            return [wb for wb in TSC.Pager(self.server.workbooks)]
+            results = [wb for wb in TSC.Pager(self.server.workbooks)]
+            return self.dfParse(results)
           
     def get_datasources(self):
         with self.server.auth.sign_in(self.tokenAuth):
-            return [wb for wb in TSC.Pager(self.server.datasources)]
+            results = [wb for wb in TSC.Pager(self.server.datasources)]
+            return self.dfParse(results)
         
     def get_users(self):
         with self.server.auth.sign_in(self.tokenAuth):
-            return [wb for wb in TSC.Pager(self.server.users)]
+            results = [wb for wb in TSC.Pager(self.server.users)]
+            return self.dfParse(results)
         
     def get_views(self):
         with self.server.auth.sign_in(self.tokenAuth):
             view_pager = partial(self.server.views.get,usage=True)
-            return [wb for wb in TSC.Pager(view_pager)]
+            results = [wb for wb in TSC.Pager(view_pager)]
+            return self.dfParse(results)
+        

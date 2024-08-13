@@ -3,7 +3,7 @@
 select 
     node,
     x,
-    y 
+    y,
+    ts_site as site
 from
-    {{ref("int_graph_edges")}}, table(summary_stats(workbook_id, datasource_name) over (partition by 1))
-join
+    {{ref("int_graph_edges")}}, table(network_graph(workbook_id, datasource_name, site) over (partition by site))
