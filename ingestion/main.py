@@ -5,9 +5,10 @@ and pushes it to snowflake
 """
 
 #Import packages
+import os
+from dotenv import load_dotenv
 import tableauserverclient as tsc
 from tsc import tableauServer
-from parser import objectList
 import pandas as pd
 import numpy as np
 import csv as csv
@@ -17,30 +18,19 @@ from snowflake.connector.pandas_tools import write_pandas
 from snowflake_connector import SnowflakeConnector
 
 
-#Import tableau server credentials
-with open(r"C:\Users\FinnCharlton\credentials.csv") as creds:
-    file = csv.reader(creds)
-    ts_dict = {}
-    for line in file:
-        ts_dict = ts_dict|({line[0]:line[1]})
+#Import Credentials
 
-ts_url = ts_dict['ï»¿url']
-ts_pat = ts_dict['pat']
-ts_pat_secret = ts_dict['patSecret']
+load_dotenv()
 
-#Import snowflake credentials
-with open(r"C:\Users\FinnCharlton\snowflake_credentials.csv") as creds:
-    file = csv.reader(creds)
-    snow_dict = {}
-    for line in file:
-        snow_dict = snow_dict|({line[0]:line[1]})
-
-snow_username = snow_dict["username"]
-snow_password = snow_dict["password"]
-snow_account = snow_dict["account"]
-snow_warehouse = snow_dict["warehouse"]
-snow_database = snow_dict["database"]
-snow_schema = snow_dict["schema"]
+ts_url = os.getenv('env_ts_url')
+ts_pat = os.getenv('env_ts_pat')
+ts_pat_secret = os.getenv('env_ts_pat_secret')
+snow_username = os.getenv('env_snow_username')
+snow_password = os.getenv('env_snow_password')
+snow_account = os.getenv('env_snow_account')
+snow_warehouse = os.getenv('env_snow_warehouse')
+snow_database = os.getenv('env_snow_database')
+snow_schema = os.getenv('env_snow_schema')
 
 #Define function for adding time of creation
 def add_updated_time(df):

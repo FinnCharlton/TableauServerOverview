@@ -28,7 +28,7 @@ left join
     select
         name,
         site,
-        listagg(owner) as owners,
+        listagg(owner,'|') as owners,
         min(created_at) as created_at
     from
         {{ref("fct_datasources")}}
