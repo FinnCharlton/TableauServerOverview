@@ -39,12 +39,13 @@ def add_updated_time(df):
 #List of Tableau Server Sites
 sites = ['til2','DataSchool','TILIE','TILUS']
 
-#Create dataframes from API calls
+#Repeat API calls for each site in sites
 for index, site in enumerate(sites):
     
-#Tableau Server Client Login
+    #Tableau Server Client Login
     ts_login_instance = tableauServer(ts_url,site,ts_pat,ts_pat_secret)
 
+    #If first loop, create df variables
     if index == 0:
 
         #Get fact tables
@@ -71,6 +72,7 @@ for index, site in enumerate(sites):
         except Exception as e:
             print(f"Error getting mapping tables : {e}")
 
+    #If not first loop, append new dfs onto existing df variables
     else:
 
         #Get fact tables
